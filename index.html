@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>HAR Compare</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="errbar"></div>
+<div id="app">
+  <div class="topbar">
+    <div class="drop" data-side="left">
+      <span class="side">LEFT</span>
+      <button type="button" data-action="pick">Choose .har…</button>
+      <input type="file" accept=".har,application/json" style="display:none" />
+      <span class="info hint">drop a .har file here</span>
+    </div>
+    <div class="drop" data-side="right">
+      <span class="side">RIGHT</span>
+      <button type="button" data-action="pick">Choose .har…</button>
+      <input type="file" accept=".har,application/json" style="display:none" />
+      <span class="info hint">drop a .har file here</span>
+    </div>
+    <div class="legend">
+      <span>100% local — files never leave this page. — made by larina ❤️</span>
+      <span class="chip"><span class="sw" style="background:var(--c-value-bar)"></span>value differs</span>
+      <span class="chip"><span class="sw" style="background:var(--c-case-bar)"></span>case differs</span>
+      <span class="chip"><span class="sw" style="background:var(--c-reorder-bar)"></span>reordered</span>
+      <span class="chip"><span class="sw" style="background:var(--c-left-bar)"></span>left only</span>
+      <span class="chip"><span class="sw" style="background:var(--c-right-bar)"></span>right only</span>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <span class="label">Auto-sync:</span>
+    <div class="seg" id="sync-seg">
+      <button data-sync="off" class="active">Off</button>
+      <button data-sync="loose">Loose</button>
+      <button data-sync="strict">Strict</button>
+    </div>
+    <span class="hint">loose = method + host + path &nbsp;·&nbsp; strict = full URL incl. query</span>
+    <label class="check" id="autoscroll-wrap" title="Scroll the auto-selected entry on the other side into view">
+      <input type="checkbox" id="autoscroll-cb" checked />
+      <span>auto-scroll</span>
+    </label>
+    <label class="check" id="matchnth-wrap" title="When duplicate URLs exist, match the Nth occurrence on the other side (e.g. 2nd-in-left → 2nd-in-right). If off, always picks the first match.">
+      <input type="checkbox" id="matchnth-cb" checked />
+      <span>match index (for duplicate requests)</span>
+    </label>
+    <span class="spacer"></span>
+    <button class="tool" id="open-search" title="Search across URLs, headers, and bodies in both HAR files (Ctrl/Cmd+F)">Search…</button>
+  </div>
+
+  <div class="workspace" id="workspace">
+    <div class="workspace-main" id="workspace-main">
+
+      <section class="panel" id="panel-lists">
+        <header class="panel-head" data-toggle="lists" title="Click to collapse/expand">
+          <span class="panel-caret">▾</span><span class="panel-title">Lists</span>
+        </header>
+        <div class="panel-body">
+          <div class="lists">
+            <div class="list-col" data-side="left">
+              <div class="list-head">
+                <input class="filter" placeholder="filter by url / method / status" />
+                <button data-action="automatch" title="One-shot: scan both sides and open the first pair with the same method + URL path. (Unlike Auto-sync, runs only when you click it.)">Auto-match</button>
+              </div>
+              <div class="list-body"></div>
+            </div>
+            <div class="list-col" data-side="right">
+              <div class="list-head">
+                <input class="filter" placeholder="filter by url / method / status" />
+                <button data-action="automatch" title="One-shot: scan both sides and open the first pair with the same method + URL path. (Unlike Auto-sync, runs only when you click it.)">Auto-match</button>
+              </div>
+              <div class="list-body"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="splitter splitter-h" id="splitter-lists-diff" data-splitter="lists" title="Drag to resize"></div>
+
+      <section class="panel" id="panel-diff">
+        <header class="panel-head" data-toggle="diff" title="Click to collapse/expand">
+          <span class="panel-caret">▾</span><span class="panel-title">Diff</span>
+        </header>
+        <div class="panel-body">
+          <div class="tabs"></div>
+          <div class="diff">
+            <div class="pane" data-pane="left"><div class="pane-head">LEFT</div><div class="pane-body"><div class="placeholder">Load HAR files on both sides, then click Auto-match or pick entries from the lists above.</div></div></div>
+            <div class="pane" data-pane="right"><div class="pane-head">RIGHT</div><div class="pane-body"><div class="placeholder">&nbsp;</div></div></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="splitter splitter-v" id="splitter-aside" data-splitter="aside" title="Drag to resize"></div>
+
+    <aside class="workspace-aside" id="workspace-aside">
+      <section class="panel" id="panel-search">
+        <header class="panel-head" data-toggle="search" title="Click to collapse/expand">
+          <span class="panel-caret">▾</span><span class="panel-title">Search</span>
+          <button class="panel-close" id="search-close" title="Close">×</button>
+        </header>
+        <div class="panel-body">
+          <div class="searchbar" id="searchbar">
+            <div class="head">
+              <input id="search-input" placeholder="search url, headers, body…  (Esc to close)" />
+              <span class="count" id="search-count"></span>
+            </div>
+            <div class="results" id="search-results"></div>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
